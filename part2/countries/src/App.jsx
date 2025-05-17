@@ -43,6 +43,19 @@ function App() {
         <ul>
         
         {filteredCountries.length === 1 ? (
+          filteredCountries.map((country, index) => {
+            const uniqueKey = generateUniqueId();
+            return (
+              <Country
+                key={uniqueKey}
+                country={country.name.common}
+                flagUrl={country.flags.png}
+                capital={country.capital ? country.capital[0] : 'N/A'}
+                languages={country.languages}
+              />
+            );
+          })
+        ) : filteredCountries.length === 1 ? (
   filteredCountries.map((country, index) => {
     const uniqueKey = generateUniqueId();
     return (
@@ -58,10 +71,10 @@ function App() {
     return (
       <Country
         key={uniqueKey}
-        country={country.name.common}
+        countryName={country.name.common}
         flagUrl={country.flags.png}
-        captial={country.capital[0]}
-        // languages={country.languages}
+        capital={country.capital[0]}
+        languages={country.languages}
 
       />
     );
