@@ -8,7 +8,9 @@ function App() {
   const [countries, setCountries] = useState([])
 
 
-    const filteredCountries = countries.filter((country) => country.name.common.toLowerCase().includes(searchTerm))
+
+
+  const filteredCountries = countries.filter((country) => country.name.common.toLowerCase().includes(searchTerm))
 
   
   function generateUniqueId() {
@@ -43,6 +45,19 @@ function App() {
         <ul>
         
         {filteredCountries.length === 1 ? (
+          filteredCountries.map((country, index) => {
+            const uniqueKey = generateUniqueId();
+            return (
+              <Country
+                key={uniqueKey}
+                country={country.name.common}
+                flagUrl={country.flags.png}
+                capital={country.capital ? country.capital[0] : 'N/A'}
+                languages={country.languages}
+              />
+            );
+          })
+        ) : filteredCountries.length === 1 ? (
   filteredCountries.map((country, index) => {
     const uniqueKey = generateUniqueId();
     return (
@@ -58,10 +73,11 @@ function App() {
     return (
       <Country
         key={uniqueKey}
-        country={country.name.common}
+        countryName={country.name.common}
+        
         flagUrl={country.flags.png}
-        captial={country.capital[0]}
-        // languages={country.languages}
+        capital={country.capital[0]}
+        languages={country.languages}
 
       />
     );
@@ -90,6 +106,9 @@ const Filter = ({ searchTerm, handleSearchChange }) => {
     </div>
   )
 }
+
+
+
 
 
 export default App
