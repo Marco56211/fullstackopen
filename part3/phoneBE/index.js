@@ -13,32 +13,32 @@ app.use(express.json())
 
 
 let persons = [
-  { 
+  {
     "id": "1",
-    "name": "Arto Hellas", 
+    "name": "Arto Hellas",
     "number": "040-123456"
   },
-  { 
+  {
     "id": "2",
-    "name": "Ada Lovelace", 
+    "name": "Ada Lovelace",
     "number": "39-44-5323523"
   },
-  { 
+  {
     "id": "3",
-    "name": "Dan Abramov", 
+    "name": "Dan Abramov",
     "number": "12-43-234345"
   },
-  { 
+  {
     "id": "4",
-    "name": "Mary Poppendieck", 
+    "name": "Mary Poppendieck",
     "number": "39-23-6423122"
   }
 ]
 
 
-let infoMessage =  {
+let infoMessage = {
 
-  "info": "Phonebook has info for" + " " + persons.length + " "+ "people",
+  "info": "Phonebook has info for" + " " + persons.length + " " + "people",
   "date": new Date().toString()
 }
 
@@ -49,16 +49,16 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(entry => entry.id === id)
+  const id = request.params.id
+  const person = persons.find(entry => entry.id === id)
 
-    if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
 
-  })
+})
 
 app.get('/api/persons', (request, response) => {
   //response.json(notes)
@@ -68,13 +68,13 @@ app.get('/api/persons', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
- 
+
   const generateId = () => {
     // Generate a random ID that is not already in use
     const maxId = persons.length > 0
       ? Math.max(...persons.map(n => n.id))
       : 0;
-    return maxId + 1; 
+    return maxId + 1;
   };
 
 
@@ -92,7 +92,7 @@ app.post('/api/persons', (request, response) => {
 
   const existingPerson = persons.find(person => person.name === body.name);
   if (existingPerson) {
-    return response.status(409).json({ 
+    return response.status(409).json({
       error: 'name must be unique'
     });
   }
@@ -105,8 +105,8 @@ app.post('/api/persons', (request, response) => {
   };
 
 
-  persons = persons.concat(person); 
-  
+  persons = persons.concat(person);
+
   response.status(201).json(person);
 });
 
@@ -119,11 +119,11 @@ app.get('/api/info', (request, response) => {
 
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    persons = persons.filter(persons => persons.id !== id)
-  
-    response.status(204).end()
-  })
+  const id = request.params.id
+  persons = persons.filter(persons => persons.id !== id)
+
+  response.status(204).end()
+})
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)

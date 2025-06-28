@@ -32,6 +32,7 @@ const Country = ({ countryName, flagUrl, languages, capital, latlng }) => {
     setShowInfo(!showInfo);
   };
 
+  
   return (
     <div>
       <h3>{countryName}</h3>
