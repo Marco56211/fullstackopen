@@ -68,16 +68,16 @@ app.get('/api/persons', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
-  // Helper function to generate a unique ID
+ 
   const generateId = () => {
     // Generate a random ID that is not already in use
     const maxId = persons.length > 0
       ? Math.max(...persons.map(n => n.id))
       : 0;
-    return maxId + 1; // Simple increment for demonstration
+    return maxId + 1; 
   };
 
-  // 1. Input validation: Check if name or number are missing
+
   if (!body.name) {
     return response.status(400).json({
       error: 'name missing'
