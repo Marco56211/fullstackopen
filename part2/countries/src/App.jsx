@@ -76,12 +76,12 @@ function App() {
       <Country
         key={uniqueKey}
         countryName={country.name.common}
+
         
         flagUrl={country.flags.png}
         capital={country.capital[0]}
         languages={country.languages}
         latlng={country.latlng}
-
 
       />
     );
