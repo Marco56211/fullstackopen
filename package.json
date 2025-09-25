@@ -1,0 +1,13 @@
+{
+  "name": "fullstackopen-github-sync",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "GitHub sync tool for Full Stack Open projects",
+  "main": "github-sync.js",
+  "scripts": {
+    "sync": "node sync-github.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^22.0.0"
+  }
+}
