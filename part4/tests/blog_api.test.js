@@ -2,10 +2,14 @@ const { test, describe, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
+
+let authToken = ''
 
 const initialBlogs = [
   {
@@ -48,6 +52,24 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
+  
+  // Create a test user for authentication
+  const passwordHash = await bcrypt.hash('password123', 10)
+  const user = new User({
+    username: 'testuser',
+    name: 'Test User',
+    passwordHash
+  })
+  await user.save()
+  
+  // Login to get token
+  const loginResponse = await api
+    .post('/api/login')
+    .send({ username: 'testuser', password: 'password123' })
+  
+  authToken = loginResponse.body.token
+  
   await Blog.insertMany(initialBlogs)
 })
 
@@ -83,6 +105,7 @@ describe('blog api', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -104,6 +127,7 @@ describe('blog api', () => {
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -126,6 +150,7 @@ describe('blog api', () => {
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -144,6 +169,7 @@ describe('blog api', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(400)
   })
@@ -158,8 +184,44 @@ describe('blog api', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(400)
+  })
+
+  test('adding a blog fails with 401 Unauthorized if token is not provided', async () => {
+    const newBlog = {
+      title: 'Unauthorized Blog',
+      author: 'No Auth',
+      url: 'http://unauthorized.com',
+      likes: 1
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect(response => {
+        assert(response.body.error.includes('token invalid'))
+      })
+  })
+
+  test('adding a blog fails with 401 Unauthorized if token is invalid', async () => {
+    const newBlog = {
+      title: 'Invalid Token Blog',
+      author: 'Invalid Token',
+      url: 'http://invalid.com',
+      likes: 1
+    }
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', 'Bearer invalidtoken123')
+      .send(newBlog)
+      .expect(401)
+      .expect(response => {
+        assert(response.body.error.includes('token invalid'))
+      })
   })
 
   test('a blog can be deleted', async () => {
