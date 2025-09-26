@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   try {
@@ -12,7 +12,7 @@ blogsRouter.get('/', async (request, response) => {
   }
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   try {
     const { title, url } = request.body
     
@@ -20,15 +20,8 @@ blogsRouter.post('/', async (request, response) => {
       return response.status(400).json({ error: 'title and url are required' })
     }
     
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
-    
-    const user = await User.findById(decodedToken.id)
-    if (!user) {
-      return response.status(401).json({ error: 'user not found' })
-    }
+    // Get user from request object
+    const user = request.user
     
     const blog = new Blog({
       ...request.body,
@@ -46,24 +39,14 @@ blogsRouter.post('/', async (request, response) => {
     
     response.status(201).json(savedBlog)
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return response.status(401).json({ error: 'token invalid' })
-    }
     response.status(400).json({ error: error.message })
   }
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
-    
-    const user = await User.findById(decodedToken.id)
-    if (!user) {
-      return response.status(401).json({ error: 'user not found' })
-    }
+    // Get user from request object
+    const user = request.user
     
     const blogToDelete = await Blog.findById(request.params.id)
     
@@ -89,9 +72,6 @@ blogsRouter.delete('/:id', async (request, response) => {
     
     response.status(204).end()
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return response.status(401).json({ error: 'token invalid' })
-    }
     response.status(400).json({ error: error.message })
   }
 })
