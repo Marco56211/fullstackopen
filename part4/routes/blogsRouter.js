@@ -47,11 +47,21 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
-    const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
+    const blogToDelete = await Blog.findById(request.params.id)
     
-    if (!deletedBlog) {
+    if (!blogToDelete) {
       return response.status(404).json({ error: 'blog not found' })
     }
+    
+    // Remove the blog from the user's blogs array if it has a user
+    if (blogToDelete.user) {
+      await User.findByIdAndUpdate(
+        blogToDelete.user,
+        { $pull: { blogs: request.params.id } }
+      )
+    }
+    
+    await Blog.findByIdAndDelete(request.params.id)
     
     response.status(204).end()
   } catch (error) {
