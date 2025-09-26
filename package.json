@@ -5,7 +5,7 @@
   "description": "GitHub sync tool for Full Stack Open projects",
   "main": "github-sync.js",
   "scripts": {
-    "sync": "node sync-github.js"
+    "sync": "echo '🔄 Getting GitHub token...' && node -e \"import('./sync-github.js')\""
   },
   "dependencies": {
     "@octokit/rest": "^22.0.0"
