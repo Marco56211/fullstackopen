@@ -115,6 +115,52 @@ describe('blog api', () => {
     assert.strictEqual(savedBlog.likes, newBlog.likes)
     assert(savedBlog.id !== undefined)
   })
+
+  test('likes property defaults to 0 if missing from request', async () => {
+    const newBlog = {
+      title: 'Test Blog Without Likes',
+      author: 'Test Author',
+      url: 'http://testblog.com'
+      // likes property is intentionally missing
+    }
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const savedBlog = response.body
+    assert.strictEqual(savedBlog.likes, 0)
+  })
+
+  test('blog without title is not added', async () => {
+    const newBlog = {
+      author: 'Test Author',
+      url: 'http://testblog.com',
+      likes: 5
+      // title property is missing
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
+
+  test('blog without url is not added', async () => {
+    const newBlog = {
+      title: 'Test Blog',
+      author: 'Test Author',
+      likes: 5
+      // url property is missing
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
 })
 
 after(async () => {
