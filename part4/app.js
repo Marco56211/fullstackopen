@@ -1,14 +1,24 @@
-const blogsRouter = require("./routes/blogsRouter.js");
-const express = require("express");
-const mongoose = require("mongoose");
+const config = require('./utils/config')
+const express = require('express')
+const mongoose = require('mongoose')
+const blogsRouter = require('./routes/blogsRouter')
 
-const app = express();
+const app = express()
 
-app.use(express.json());
+app.use(express.json())
 
-const mongoUrl = `mongodb+srv://fulstack:testing123@cluster0.rl8qyp8.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster0`;
-mongoose.connect(mongoUrl);
+mongoose.set('strictQuery', false)
 
-app.use("/api/blogs", blogsRouter);
+console.log('connecting to', config.MONGODB_URI)
 
-module.exports = app;
+mongoose.connect(config.MONGODB_URI)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message)
+  })
+
+app.use('/api/blogs', blogsRouter)
+
+module.exports = app
