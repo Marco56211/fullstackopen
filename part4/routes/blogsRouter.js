@@ -71,6 +71,11 @@ blogsRouter.delete('/:id', async (request, response) => {
       return response.status(404).json({ error: 'blog not found' })
     }
     
+    // Check if the blog has a user assigned (handle legacy blogs)
+    if (!blogToDelete.user) {
+      return response.status(403).json({ error: 'this blog has no owner and cannot be deleted' })
+    }
+    
     // Check if the user is the creator of the blog
     if (blogToDelete.user.toString() !== user._id.toString()) {
       return response.status(403).json({ error: 'only the creator can delete this blog' })

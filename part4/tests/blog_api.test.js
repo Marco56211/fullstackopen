@@ -354,6 +354,27 @@ describe('blog api', () => {
       })
   })
 
+  test('deleting a legacy blog without owner fails with 403', async () => {
+    // Create a legacy blog without user reference (simulates pre-authentication data)
+    const legacyBlog = new Blog({
+      title: 'Legacy Blog Without Owner',
+      author: 'Legacy Author',
+      url: 'http://legacy.com',
+      likes: 5
+      // No user field - simulates old blog before authentication
+    })
+    
+    const savedLegacyBlog = await legacyBlog.save()
+
+    await api
+      .delete(`/api/blogs/${savedLegacyBlog._id}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .expect(403)
+      .expect(response => {
+        assert(response.body.error.includes('this blog has no owner and cannot be deleted'))
+      })
+  })
+
   test('updating the likes of a blog post', async () => {
     const blogsAtStart = await api.get('/api/blogs')
     const blogToUpdate = blogsAtStart.body[0]
