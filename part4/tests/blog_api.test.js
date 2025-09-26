@@ -72,6 +72,49 @@ describe('blog api', () => {
     assert(blog.id !== undefined, 'id property should be defined')
     assert(blog._id === undefined, '_id property should not be defined')
   })
+
+  test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: 'Testing with SuperTest',
+      author: 'Test Author',
+      url: 'http://testurl.com',
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await api.get('/api/blogs')
+    assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length + 1)
+
+    const titles = blogsAtEnd.body.map(blog => blog.title)
+    assert(titles.includes('Testing with SuperTest'))
+  })
+
+  test('blog post content is saved correctly', async () => {
+    const newBlog = {
+      title: 'Content Verification Test',
+      author: 'Content Author',
+      url: 'http://contenttest.com',
+      likes: 3
+    }
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const savedBlog = response.body
+    assert.strictEqual(savedBlog.title, newBlog.title)
+    assert.strictEqual(savedBlog.author, newBlog.author)
+    assert.strictEqual(savedBlog.url, newBlog.url)
+    assert.strictEqual(savedBlog.likes, newBlog.likes)
+    assert(savedBlog.id !== undefined)
+  })
 })
 
 after(async () => {
