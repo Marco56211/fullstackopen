@@ -11,62 +11,6 @@ externalPort = 3000
 localPort = 3003
 externalPort = 3003
 
-[[ports]]
-localPort = 33049
-externalPort = 9000
-
-[[ports]]
-localPort = 34927
-externalPort = 5000
-
-[[ports]]
-localPort = 36333
-externalPort = 80
-
-[[ports]]
-localPort = 37387
-externalPort = 3001
-
-[[ports]]
-localPort = 38909
-externalPort = 6000
-
-[[ports]]
-localPort = 39017
-externalPort = 8000
-
-[[ports]]
-localPort = 39347
-externalPort = 5173
-
-[[ports]]
-localPort = 40125
-externalPort = 3002
-
-[[ports]]
-localPort = 41879
-externalPort = 8081
-
-[[ports]]
-localPort = 43157
-externalPort = 8008
-
-[[ports]]
-localPort = 44901
-externalPort = 8080
-
-[[ports]]
-localPort = 46089
-externalPort = 8099
-
-[[ports]]
-localPort = 46207
-externalPort = 4200
-
-[[ports]]
-localPort = 46627
-externalPort = 6800
-
 [agent]
 expertMode = true
 integrations = ["github:1.0.0"]
