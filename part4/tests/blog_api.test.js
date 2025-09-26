@@ -224,17 +224,29 @@ describe('blog api', () => {
       })
   })
 
-  test('a blog can be deleted', async () => {
-    const blogsAtStart = await api.get('/api/blogs')
-    const blogToDelete = blogsAtStart.body[0]
+  test('a blog can be deleted by its creator', async () => {
+    // First create a blog with authentication
+    const newBlog = {
+      title: 'Blog to be deleted',
+      author: 'Test Author', 
+      url: 'http://tobedeleted.com',
+      likes: 1
+    }
+
+    const blogResponse = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(newBlog)
+      .expect(201)
+
+    const blogToDelete = blogResponse.body
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${authToken}`)
       .expect(204)
 
     const blogsAtEnd = await api.get('/api/blogs')
-    assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length - 1)
-
     const titles = blogsAtEnd.body.map(blog => blog.title)
     assert(!titles.includes(blogToDelete.title))
   })
@@ -244,7 +256,102 @@ describe('blog api', () => {
 
     await api
       .delete(`/api/blogs/${invalidId}`)
+      .set('Authorization', `Bearer ${authToken}`)
       .expect(404)
+  })
+
+  test('deleting a blog fails with 401 if no token provided', async () => {
+    // First create a blog
+    const newBlog = {
+      title: 'Blog to test unauthorized delete',
+      author: 'Test Author',
+      url: 'http://testunauth.com',
+      likes: 1
+    }
+
+    const blogResponse = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(newBlog)
+      .expect(201)
+
+    const blogToDelete = blogResponse.body
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(401)
+      .expect(response => {
+        assert(response.body.error.includes('token invalid'))
+      })
+  })
+
+  test('deleting a blog fails with 401 if token is invalid', async () => {
+    // First create a blog
+    const newBlog = {
+      title: 'Blog to test invalid token delete',
+      author: 'Test Author',
+      url: 'http://testinvalidtoken.com',
+      likes: 1
+    }
+
+    const blogResponse = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(newBlog)
+      .expect(201)
+
+    const blogToDelete = blogResponse.body
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', 'Bearer invalidtoken123')
+      .expect(401)
+      .expect(response => {
+        assert(response.body.error.includes('token invalid'))
+      })
+  })
+
+  test('deleting a blog fails with 403 if user is not the creator', async () => {
+    // Create a second user
+    const passwordHash = await bcrypt.hash('password456', 10)
+    const secondUser = new User({
+      username: 'seconduser',
+      name: 'Second User',
+      passwordHash
+    })
+    await secondUser.save()
+
+    // Login as second user
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'seconduser', password: 'password456' })
+
+    const secondUserToken = loginResponse.body.token
+
+    // First user creates a blog
+    const newBlog = {
+      title: 'Blog by first user',
+      author: 'First User',
+      url: 'http://firstuser.com',
+      likes: 1
+    }
+
+    const blogResponse = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(newBlog)
+      .expect(201)
+
+    const blogToDelete = blogResponse.body
+
+    // Second user tries to delete first user's blog
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${secondUserToken}`)
+      .expect(403)
+      .expect(response => {
+        assert(response.body.error.includes('only the creator can delete this blog'))
+      })
   })
 
   test('updating the likes of a blog post', async () => {
