@@ -161,6 +161,65 @@ describe('blog api', () => {
       .send(newBlog)
       .expect(400)
   })
+
+  test('a blog can be deleted', async () => {
+    const blogsAtStart = await api.get('/api/blogs')
+    const blogToDelete = blogsAtStart.body[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogsAtEnd = await api.get('/api/blogs')
+    assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length - 1)
+
+    const titles = blogsAtEnd.body.map(blog => blog.title)
+    assert(!titles.includes(blogToDelete.title))
+  })
+
+  test('deleting a blog with invalid id returns 404', async () => {
+    const invalidId = '507f1f77bcf86cd799439011'
+
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .expect(404)
+  })
+
+  test('updating the likes of a blog post', async () => {
+    const blogsAtStart = await api.get('/api/blogs')
+    const blogToUpdate = blogsAtStart.body[0]
+
+    const updatedBlog = {
+      title: blogToUpdate.title,
+      author: blogToUpdate.author,
+      url: blogToUpdate.url,
+      likes: blogToUpdate.likes + 1
+    }
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    assert.strictEqual(response.body.likes, blogToUpdate.likes + 1)
+    assert.strictEqual(response.body.id, blogToUpdate.id)
+  })
+
+  test('updating a blog with invalid id returns 404', async () => {
+    const invalidId = '507f1f77bcf86cd799439011'
+    const updatedBlog = {
+      title: 'Updated Title',
+      author: 'Updated Author',
+      url: 'http://updated.com',
+      likes: 10
+    }
+
+    await api
+      .put(`/api/blogs/${invalidId}`)
+      .send(updatedBlog)
+      .expect(404)
+  })
 })
 
 after(async () => {
