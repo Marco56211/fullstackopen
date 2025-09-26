@@ -55,24 +55,38 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    
+    const user = await User.findById(decodedToken.id)
+    if (!user) {
+      return response.status(401).json({ error: 'user not found' })
+    }
+    
     const blogToDelete = await Blog.findById(request.params.id)
     
     if (!blogToDelete) {
       return response.status(404).json({ error: 'blog not found' })
     }
     
-    // Remove the blog from the user's blogs array if it has a user
-    if (blogToDelete.user) {
-      await User.findByIdAndUpdate(
-        blogToDelete.user,
-        { $pull: { blogs: request.params.id } }
-      )
+    // Check if the user is the creator of the blog
+    if (blogToDelete.user.toString() !== user._id.toString()) {
+      return response.status(403).json({ error: 'only the creator can delete this blog' })
     }
+    
+    // Remove the blog from the user's blogs array
+    user.blogs = user.blogs.filter(blog => blog.toString() !== request.params.id)
+    await user.save()
     
     await Blog.findByIdAndDelete(request.params.id)
     
     response.status(204).end()
   } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return response.status(401).json({ error: 'token invalid' })
+    }
     response.status(400).json({ error: error.message })
   }
 })
