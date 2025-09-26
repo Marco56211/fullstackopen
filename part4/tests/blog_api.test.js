@@ -64,6 +64,14 @@ describe('blog api', () => {
     
     assert.strictEqual(response.body.length, initialBlogs.length)
   })
+
+  test('unique identifier property of blog posts is named id', async () => {
+    const response = await api.get('/api/blogs')
+    
+    const blog = response.body[0]
+    assert(blog.id !== undefined, 'id property should be defined')
+    assert(blog._id === undefined, '_id property should not be defined')
+  })
 })
 
 after(async () => {
