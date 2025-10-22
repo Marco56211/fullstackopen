@@ -89,12 +89,11 @@ const App = () => {
   };
 
   const handleDelete = async (blog) => {
-
     deleteButton.addEventListener("click", () => {
       if (window.confirm("Do you want to delete the post?")) {
         blogService.remove(blog);
       } else {
-        log.innerText = "OK, we wont delete it ;)!";
+        alert.innerText = "OK, we wont delete it ;)!";
       }
     });
   };
