@@ -1,22 +1,22 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const CreateBlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [visible, setVisible] = useState(false)
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    createBlog({ title, author, url }); // call parent
-    setTitle("");
-    setAuthor("");
-    setUrl("");
-    setVisible(false);
-  };
+    event.preventDefault()
+    createBlog({ title, author, url }) // call parent
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    setVisible(false)
+  }
 
   if (!visible) {
-    return <button onClick={() => setVisible(true)}>Create blog post</button>;
+    return <button onClick={() => setVisible(true)}>Create blog post</button>
   }
 
   return (
@@ -47,7 +47,7 @@ const CreateBlogForm = ({ createBlog }) => {
         </button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default CreateBlogForm;
+export default CreateBlogForm

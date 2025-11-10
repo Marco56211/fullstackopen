@@ -1,116 +1,116 @@
-import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import CreateBlogForm from "./components/CreateBlogForm";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+import { useState, useEffect } from 'react'
+import Blog from './components/Blog'
+import CreateBlogForm from './components/CreateBlogForm'
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [notification, setNotification] = useState(null);
+  const [blogs, setBlogs] = useState([])
+  const [user, setUser] = useState(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then((initialBlogs) => setBlogs(initialBlogs));
-  }, []);
+    blogService.getAll().then((initialBlogs) => setBlogs(initialBlogs))
+  }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, []);
+  }, [])
 
-  const showNotification = (message, type = "success") => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 5000);
-  };
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification(null), 5000)
+  }
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const user = await loginService.login({ username, password });
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
-      showNotification(`Welcome ${user.name}!`);
+      const user = await loginService.login({ username, password })
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
+      showNotification(`Welcome ${user.name}!`)
     } catch (exception) {
-      showNotification("wrong username or password", "error");
+      showNotification('wrong username or password', 'error')
     }
-  };
+  }
 
   const handleLogout = () => {
-    setUser(null);
-    blogService.setToken(null);
-    window.localStorage.removeItem("loggedBlogappUser");
-    showNotification("Logged out successfully");
-  };
+    setUser(null)
+    blogService.setToken(null)
+    window.localStorage.removeItem('loggedBlogappUser')
+    showNotification('Logged out successfully')
+  }
 
   const handleLike = async (blog) => {
-    debugger;
+    debugger
     try {
-      const updatedObject = { likes: (blog.likes ?? 0) + 1 };
+      const updatedObject = { likes: (blog.likes ?? 0) + 1 }
 
       setBlogs((prev) =>
         prev.map((b) =>
           b.id === blog.id ? { ...b, likes: updatedObject.likes } : b,
         ),
-      );
+      )
 
-      const returned = await blogService.update(blog.id, updatedObject);
+      const returned = await blogService.update(blog.id, updatedObject)
 
-      setBlogs((prev) => prev.map((b) => (b.id === blog.id ? returned : b)));
+      setBlogs((prev) => prev.map((b) => (b.id === blog.id ? returned : b)))
     } catch (error) {
       setBlogs((prev) =>
         prev.map((b) =>
           b.id === blog.id ? { ...b, likes: blog.likes ?? 0 } : b,
         ),
-      );
-      showNotification("Failed to like the blog", "error");
-      console.error("handleLike error", error);
+      )
+      showNotification('Failed to like the blog', 'error')
+      console.error('handleLike error', error)
     }
-  };
+  }
 
   const createBlog = async (blogObject) => {
     try {
-      const returnedBlog = await blogService.create(blogObject);
-      setBlogs((prev) => [...prev, returnedBlog]);
+      const returnedBlog = await blogService.create(blogObject)
+      setBlogs((prev) => [...prev, returnedBlog])
       showNotification(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-      );
+      )
     } catch {
-      showNotification("failed to add blog", "error");
+      showNotification('failed to add blog', 'error')
     }
-  };
+  }
 
   const handleDelete = async (blog) => {
-    deleteButton.addEventListener("click", () => {
-      if (window.confirm("Do you want to delete the post?")) {
-        blogService.remove(blog);
-      } else {
-        alert.innerText = "OK, we wont delete it ;)!";
-      }
-    });
-  };
+    if (window.confirm('Do you want to delete the post?')) {
+      console.log(blog)
+      await blogService.remove(blog.id)
+      setBlogs(blogs.filter((b) => b.id !== blog.id))
+    } else {
+      console.log('delete cancelled')
+    }
+  }
 
   const Notification = ({ notification }) => {
-    if (!notification) return null;
+    if (!notification) return null
     const style = {
-      color: notification.type === "error" ? "red" : "green",
-      background: "lightgrey",
+      color: notification.type === 'error' ? 'red' : 'green',
+      background: 'lightgrey',
       fontSize: 20,
-      borderStyle: "solid",
+      borderStyle: 'solid',
       borderRadius: 5,
       padding: 10,
       marginBottom: 10,
-    };
-    return <div style={style}>{notification.message}</div>;
-  };
+    }
+    return <div style={style}>{notification.message}</div>
+  }
 
   if (!user) {
     return (
@@ -136,7 +136,7 @@ const App = () => {
           <button type="submit">login</button>
         </form>
       </div>
-    );
+    )
   }
 
   return (
@@ -160,7 +160,7 @@ const App = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
