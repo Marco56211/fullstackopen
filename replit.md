@@ -27,10 +27,13 @@ Preferred communication style: Simple, everyday language.
 - **Development Data**: JSON Server for frontend development and testing
 
 ## Testing Strategy
-- **Testing Framework**: Node.js built-in test runner for backend unit and integration testing
-- **Test Categories**: Unit tests for utility functions, integration tests for API endpoints
+- **Backend Testing**: Node.js built-in test runner for backend unit and integration testing
+- **Frontend Testing**: Vitest with @testing-library/react v16+ for React 19 compatibility
+- **Component Testing**: React Testing Library with userEvent for user interaction simulation
+- **Test Categories**: Backend unit tests, API integration tests, frontend component tests
 - **Test Data**: Dedicated test database configuration with automated test data setup
 - **API Testing**: Supertest for HTTP endpoint testing and response validation
+- **Known Issues**: React 19 produces benign act() warnings with userEvent due to stricter state batching semantics; these are false positives per Testing Library maintainers and can be safely ignored
 
 # External Dependencies
 
@@ -41,10 +44,12 @@ Preferred communication style: Simple, everyday language.
 - **Mongoose 8**: Latest MongoDB object modeling library with enhanced TypeScript support
 
 ## Development Tools
-- **Vite**: Fast build tool and development server for React applications
+- **Vite**: Fast build tool and development server for React applications with Vitest test runner
 - **JSON Server**: Mock REST API server for frontend development and prototyping
 - **ESLint 9**: Code linting with React-specific rules and modern JavaScript support
 - **Morgan**: HTTP request logging middleware for Express applications
+- **Testing Library**: @testing-library/react v16+, @testing-library/user-event, @testing-library/jest-dom
+- **jsdom**: JavaScript implementation of web standards for headless browser testing
 
 ## HTTP and API Integration
 - **Axios**: Promise-based HTTP client for API communication in React applications
