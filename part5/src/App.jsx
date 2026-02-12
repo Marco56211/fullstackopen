@@ -156,6 +156,7 @@ const App = () => {
             blog={blog}
             onLike={() => handleLike(blog)}
             onDelete={() => handleDelete(blog)}
+            user={user}
           />
         ))}
       </div>

@@ -15,11 +15,16 @@ describe('<Blog />', () => {
     }
   }
 
+  const currentUser = {
+    username: 'testuser',
+    name: 'Test User'
+  }
+
   test('renders title and author, but not URL or likes by default', () => {
     const mockHandler = vi.fn()
 
     const { container } = render(
-      <Blog blog={blog} onLike={mockHandler} onDelete={mockHandler} />
+      <Blog blog={blog} onLike={mockHandler} onDelete={mockHandler} user={currentUser} />
     )
 
     // Check that title and author are rendered
@@ -36,7 +41,7 @@ describe('<Blog />', () => {
     const mockHandler = vi.fn()
 
     const { container } = render(
-      <Blog blog={blog} onLike={mockHandler} onDelete={mockHandler} />
+      <Blog blog={blog} onLike={mockHandler} onDelete={mockHandler} user={currentUser} />
     )
 
     const user = userEvent.setup()
@@ -58,7 +63,7 @@ describe('<Blog />', () => {
     const mockHandler = vi.fn()
 
     render(
-      <Blog blog={blog} onLike={mockHandler} onDelete={mockHandler} />
+      <Blog blog={blog} onLike={mockHandler} onDelete={mockHandler} user={currentUser} />
     )
 
     const user = userEvent.setup()
