@@ -52,7 +52,6 @@ const App = () => {
   }
 
   const handleLike = async (blog) => {
-    debugger
     try {
       const updatedObject = { likes: (blog.likes ?? 0) + 1 }
 

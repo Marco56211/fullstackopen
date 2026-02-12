@@ -30,9 +30,11 @@ Preferred communication style: Simple, everyday language.
 - **Backend Testing**: Node.js built-in test runner for backend unit and integration testing
 - **Frontend Testing**: Vitest with @testing-library/react v16+ for React 19 compatibility
 - **Component Testing**: React Testing Library with userEvent for user interaction simulation
-- **Test Categories**: Backend unit tests, API integration tests, frontend component tests
+- **E2E Testing**: Playwright (Chromium) in separate e2e-tests/ project for end-to-end testing
+- **Test Categories**: Backend unit tests, API integration tests, frontend component tests, E2E tests
 - **Test Data**: Dedicated test database configuration with automated test data setup
 - **API Testing**: Supertest for HTTP endpoint testing and response validation
+- **Test Reset**: Backend exposes POST /api/testing/reset endpoint when NODE_ENV=test to clear database for E2E tests
 - **Known Issues**: React 19 produces benign act() warnings with userEvent due to stricter state batching semantics; these are false positives per Testing Library maintainers and can be safely ignored
 
 # External Dependencies

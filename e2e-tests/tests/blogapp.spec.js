@@ -13,7 +13,7 @@ const createBlog = async (page, title, author, url) => {
   await textboxes.nth(1).fill(author)
   await textboxes.nth(2).fill(url)
   await page.getByRole('button', { name: 'create' }).click()
-  await expect(page.getByText(title)).toBeVisible()
+  await expect(page.locator('.blog-title-author').getByText(title)).toBeVisible()
 }
 
 describe('Blog app', () => {
@@ -57,7 +57,7 @@ describe('Blog app', () => {
 
     test('a new blog can be created', async ({ page }) => {
       await createBlog(page, 'A blog created by Playwright', 'Playwright Author', 'http://playwright.dev')
-      await expect(page.getByText('A blog created by Playwright')).toBeVisible()
+      await expect(page.locator('.blog-title-author').getByText('A blog created by Playwright')).toBeVisible()
     })
 
     describe('and a blog exists', () => {
@@ -79,7 +79,7 @@ describe('Blog app', () => {
         page.on('dialog', dialog => dialog.accept())
         await page.getByRole('button', { name: 'DELETE BLOG' }).click()
 
-        await expect(page.getByText('Test Blog Title')).not.toBeVisible()
+        await expect(page.locator('.blog-title-author').getByText('Test Blog Title')).not.toBeVisible()
       })
 
       test('only the creator can see the delete button', async ({ page, request }) => {

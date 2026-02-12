@@ -24,8 +24,6 @@ const Blog = ({ blog, onLike, onDelete, user }) => {
     marginBottom: 5,
   }
 
-  console.log('blog.id', blog.id)
-
   return (
     <div style={blogStyle} className="blog">
       <div className="blog-title-author">
